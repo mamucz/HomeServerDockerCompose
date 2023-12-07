@@ -1,0 +1,28 @@
+kibana:
+   depends_on:
+     elasticsearch:
+       condition: service_healthy
+   image: docker.elastic.co/kibana/kibana:8.11.1
+   labels:
+     co.elastic.logs/module: kibana
+   volumes:
+     - kibanadata:/usr/share/kibana/data
+   ports:
+     - 5601:5601
+   environment:
+     - SERVERNAME=kibana
+     - ELASTICSEARCH_HOSTS=http://192.168.88.148:9200
+     - ELASTICSEARCH_USERNAME=kibana_system
+     - ELASTICSEARCH_PASSWORD=jonasek1411
+     #- XPACK_SECURITY_ENCRYPTIONKEY=${ENCRYPTION_KEY}
+     #- XPACK_ENCRYPTEDSAVEDOBJECTS_ENCRYPTIONKEY=${ENCRYPTION_KEY}
+     #- XPACK_REPORTING_ENCRYPTIONKEY=${ENCRYPTION_KEY}
+   healthcheck:
+     test:
+       [
+         "CMD-SHELL",
+         "curl -s -I http://localhost:5601 | grep -q 'HTTP/1.1 302 Found'",
+       ]
+     interval: 10s
+     timeout: 10s
+     retries: 120

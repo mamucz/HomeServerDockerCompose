@@ -1,0 +1,33 @@
+version: '3.7'
+
+volumes:
+  baget-data:
+      name: baget-data
+
+networks:
+  internal-net:
+    name: internal-net
+    driver: bridge
+
+services:
+  baget:
+    image: loicsharma/baget:latest
+    container_name: baget
+    restart: always
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - Storage__Type=FileSystem
+      - Storage__Path=/var/baget/packages
+      - Database__Type=Sqlite
+      - Database__ConnectionString=Data Source=/var/baget/baget.db
+      - Search__Type=Database
+      - ApiKey=MySecretApi
+      - AllowPackageOverwrites=true
+      - PackageDeletionBehavior=HardDelete
+      - Mirror__Enabled=true
+    volumes:
+      - baget-data:/var/baget
+    ports:
+      - 5555:80
+    networks: 
+      - internal-net
